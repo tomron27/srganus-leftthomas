@@ -14,6 +14,7 @@ import pytorch_ssim
 from data_utils import TrainDatasetFromFolder, ValDatasetFromFolder, display_transform
 from loss import GeneratorLoss
 from model import Generator, Discriminator
+from unet import UNet
 
 # parser = argparse.ArgumentParser(description='Train Super Resolution Models')
 # parser.add_argument('--crop_size', default=88, type=int, help='training images crop size')
@@ -33,10 +34,11 @@ NUM_EPOCHS = 1
 
 train_set = TrainDatasetFromFolder('data/train', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
 val_set = ValDatasetFromFolder('data/train', upscale_factor=UPSCALE_FACTOR)
-train_loader = DataLoader(dataset=train_set, num_workers=4, batch_size=2, shuffle=True)
-val_loader = DataLoader(dataset=val_set, num_workers=4, batch_size=1, shuffle=False)
+train_loader = DataLoader(dataset=train_set, num_workers=1, batch_size=4, shuffle=True)
+val_loader = DataLoader(dataset=val_set, num_workers=1, batch_size=1, shuffle=False)
 
-netG = Generator(UPSCALE_FACTOR)
+#netG = Generator(UPSCALE_FACTOR)
+netG = UNet(1,1,UPSCALE_FACTOR)
 print('# generator parameters:', sum(param.numel() for param in netG.parameters()))
 netD = Discriminator()
 print('# discriminator parameters:', sum(param.numel() for param in netD.parameters()))
