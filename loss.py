@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 from torchvision.models.vgg import vgg16
+import torchvision.transforms as transforms
 
 
 class GeneratorLoss(nn.Module):
@@ -12,18 +13,21 @@ class GeneratorLoss(nn.Module):
             param.requires_grad = False
         self.loss_network = loss_network
         self.mse_loss = nn.MSELoss()
-        self.tv_loss = TVLoss()
+        #self.tv_loss = TVLoss()
 
     def forward(self, out_labels, out_images, target_images):
         # Adversarial Loss
         adversarial_loss = torch.mean(1 - out_labels)
         # Perception Loss
-        perception_loss = self.mse_loss(self.loss_network(out_images), self.loss_network(target_images))
+        rgb_out_images = transforms.Lambda(lambda x: torch.cat([x, x, x], 1))(out_images)
+        rgb_target_images = transforms.Lambda(lambda x: torch.cat([x, x, x], 1))(target_images)
+
+        perception_loss = self.mse_loss(self.loss_network(rgb_out_images), self.loss_network(rgb_target_images))
         # Image Loss
         image_loss = self.mse_loss(out_images, target_images)
         # TV Loss
-        tv_loss = self.tv_loss(out_images)
-        return image_loss + 0.001 * adversarial_loss + 0.006 * perception_loss + 2e-8 * tv_loss
+        #tv_loss = self.tv_loss(out_images)
+        return image_loss + 0.001 * adversarial_loss + 0.006 * perception_loss #+ 2e-8 * tv_loss
 
 
 class TVLoss(nn.Module):

@@ -2,7 +2,7 @@ import argparse
 import os
 from math import log10
 
-import pandas as pd
+#import pandas as pd
 import torch.optim as optim
 import torch.utils.data
 import torchvision.utils as utils
@@ -15,21 +15,25 @@ from data_utils import TrainDatasetFromFolder, ValDatasetFromFolder, display_tra
 from loss import GeneratorLoss
 from model import Generator, Discriminator
 
-parser = argparse.ArgumentParser(description='Train Super Resolution Models')
-parser.add_argument('--crop_size', default=88, type=int, help='training images crop size')
-parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8],
-                    help='super resolution upscale factor')
-parser.add_argument('--num_epochs', default=100, type=int, help='train epoch number')
+# parser = argparse.ArgumentParser(description='Train Super Resolution Models')
+# parser.add_argument('--crop_size', default=88, type=int, help='training images crop size')
+# parser.add_argument('--upscale_factor', default=4, type=int, choices=[2, 4, 8],
+#                     help='super resolution upscale factor')
+# parser.add_argument('--num_epochs', default=100, type=int, help='train epoch number')
+#
+# opt = parser.parse_args()
+#
+# CROP_SIZE = opt.crop_size
+# UPSCALE_FACTOR = opt.upscale_factor
+# NUM_EPOCHS = opt.num_epochs
 
-opt = parser.parse_args()
+CROP_SIZE = 0
+UPSCALE_FACTOR = 2
+NUM_EPOCHS = 1
 
-CROP_SIZE = opt.crop_size
-UPSCALE_FACTOR = opt.upscale_factor
-NUM_EPOCHS = opt.num_epochs
-
-train_set = TrainDatasetFromFolder('data/VOC2012/train', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
-val_set = ValDatasetFromFolder('data/VOC2012/val', upscale_factor=UPSCALE_FACTOR)
-train_loader = DataLoader(dataset=train_set, num_workers=4, batch_size=64, shuffle=True)
+train_set = TrainDatasetFromFolder('data/train', crop_size=CROP_SIZE, upscale_factor=UPSCALE_FACTOR)
+val_set = ValDatasetFromFolder('data/train', upscale_factor=UPSCALE_FACTOR)
+train_loader = DataLoader(dataset=train_set, num_workers=4, batch_size=2, shuffle=True)
 val_loader = DataLoader(dataset=val_set, num_workers=4, batch_size=1, shuffle=False)
 
 netG = Generator(UPSCALE_FACTOR)

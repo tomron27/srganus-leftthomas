@@ -16,7 +16,7 @@ def calculate_valid_crop_size(crop_size, upscale_factor):
 
 def train_hr_transform(crop_size):
     return Compose([
-        RandomCrop(crop_size),
+        #RandomCrop(crop_size),
         ToTensor(),
     ])
 
@@ -24,7 +24,7 @@ def train_hr_transform(crop_size):
 def train_lr_transform(crop_size, upscale_factor):
     return Compose([
         ToPILImage(),
-        Resize(crop_size // upscale_factor, interpolation=Image.BICUBIC),
+        Resize([422/upscale_factor, 636/upscale_factor]),
         ToTensor()
     ])
 
@@ -32,8 +32,8 @@ def train_lr_transform(crop_size, upscale_factor):
 def display_transform():
     return Compose([
         ToPILImage(),
-        Resize(400),
-        CenterCrop(400),
+        #Resize(400),
+        #CenterCrop(400),
         ToTensor()
     ])
 
@@ -42,7 +42,7 @@ class TrainDatasetFromFolder(Dataset):
     def __init__(self, dataset_dir, crop_size, upscale_factor):
         super(TrainDatasetFromFolder, self).__init__()
         self.image_filenames = [join(dataset_dir, x) for x in listdir(dataset_dir) if is_image_file(x)]
-        crop_size = calculate_valid_crop_size(crop_size, upscale_factor)
+        #crop_size = calculate_valid_crop_size(crop_size, upscale_factor)
         self.hr_transform = train_hr_transform(crop_size)
         self.lr_transform = train_lr_transform(crop_size, upscale_factor)
 
